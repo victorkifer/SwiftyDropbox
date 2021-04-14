@@ -7,11 +7,15 @@ import PackageDescription
 
 let package = Package(
     name: "SwiftyDropbox",
+    platforms: [
+        .macOS(.v10_12),
+        .iOS(.v10)
+    ],
     products: [
         .library(name: "SwiftyDropbox", targets:["SwiftyDropbox"]),
     ],
     dependencies: [
-        .package(url: "https://github.com/Alamofire/Alamofire.git", .upToNextMinor(from: "4.9.1")),
+        .package(url: "https://github.com/Alamofire/Alamofire.git", .upToNextMinor(from: "5.4.2")),
     ],
     targets: [
         .target(
@@ -19,5 +23,6 @@ let package = Package(
             dependencies: ["Alamofire"],
             path: "Source"
         )
-    ]
+    ],
+    swiftLanguageVersions: [.v5]
 )
