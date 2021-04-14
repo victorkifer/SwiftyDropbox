@@ -89,9 +89,8 @@ class OAuthTokenRefreshRequest: OAuthTokenRequest {
 
 /// Makes a network request to `oauth2/token` to get short-lived access token.
 class OAuthTokenRequest {
-    private static let sessionManager: SessionManager = {
-        let sessionManager = SessionManager(configuration: .default)
-        sessionManager.startRequestsImmediately = false
+    private static let sessionManager: Session = {
+        let sessionManager = Session(configuration: .default, startRequestsImmediately: false)
         return sessionManager
     }()
 
@@ -104,7 +103,7 @@ class OAuthTokenRequest {
             "locale": locale,
         ]
         let allParams = params.merging(commonParams) { (_, commonParam) in commonParam }
-        let headers = ["User-Agent": ApiClientConstants.defaultUserAgent]
+        let headers = HTTPHeaders(["User-Agent": ApiClientConstants.defaultUserAgent])
         request = Self.sessionManager.request(
             "\(ApiClientConstants.apiHost)/oauth2/token",
             method: .post,
