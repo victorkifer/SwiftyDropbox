@@ -574,7 +574,9 @@ open class RpcRequest<RSerial: JSONSerializer, ESerial: JSONSerializer>: Request
         queue: DispatchQueue? = nil,
         completionHandler: @escaping (RSerial.ValueType?, CallError<ESerial.ValueType>?) -> Void
     ) -> Self {
-        request.setCompletionHandler(queue: queue, completionHandler: .dataCompletionHandler({ response in
+        request.setCompletionHandler(
+            queue: queue ?? DispatchQueue.main,
+            completionHandler: .dataCompletionHandler({ response in
             if let error = response.error {
                 completionHandler(nil, self.handleResponseError(response.response, data: response.data, error: error))
             } else {
@@ -609,7 +611,9 @@ open class UploadRequest<RSerial: JSONSerializer, ESerial: JSONSerializer>: Requ
         queue: DispatchQueue? = nil,
         completionHandler: @escaping (RSerial.ValueType?, CallError<ESerial.ValueType>?) -> Void
     ) -> Self {
-        request.setCompletionHandler(queue: queue, completionHandler: .dataCompletionHandler({ response in
+        request.setCompletionHandler(
+            queue: queue ?? DispatchQueue.main,
+            completionHandler: .dataCompletionHandler({ response in
             if let error = response.error {
                 completionHandler(nil, self.handleResponseError(response.response, data: response.data, error: error))
             } else {
@@ -649,7 +653,9 @@ open class DownloadRequestFile<RSerial: JSONSerializer, ESerial: JSONSerializer>
         queue: DispatchQueue? = nil,
         completionHandler: @escaping ((RSerial.ValueType, URL)?, CallError<ESerial.ValueType>?) -> Void
     ) -> Self {
-        request.setCompletionHandler(queue: queue, completionHandler: .downloadFileCompletionHandler({ response in
+        request.setCompletionHandler(
+            queue: queue ?? DispatchQueue.main,
+            completionHandler: .downloadFileCompletionHandler({ response in
             if let error = response.error {
                 completionHandler(
                     nil, self.handleResponseError(response.response, data: self.errorMessage, error: error)
@@ -691,7 +697,9 @@ open class DownloadRequestMemory<RSerial: JSONSerializer, ESerial: JSONSerialize
         queue: DispatchQueue? = nil,
         completionHandler: @escaping ((RSerial.ValueType, Data)?, CallError<ESerial.ValueType>?) -> Void
     ) -> Self {
-        request.setCompletionHandler(queue: queue, completionHandler: .dataCompletionHandler({ response in
+        request.setCompletionHandler(
+            queue: queue ?? DispatchQueue.main,
+            completionHandler: .dataCompletionHandler({ response in
             if let error = response.error {
                 completionHandler(nil, self.handleResponseError(response.response, data: response.data, error: error))
             } else {

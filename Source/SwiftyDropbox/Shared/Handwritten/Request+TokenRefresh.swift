@@ -8,9 +8,9 @@ import Alamofire
 /// Completion handler for ApiRequest.
 enum RequestCompletionHandler {
     /// Handler for data requests whose results are in memory.
-    case dataCompletionHandler((DefaultDataResponse) -> Void)
+    case dataCompletionHandler((AFDataResponse<Data?>) -> Void)
     /// Handler for download request which stores download result into a file.
-    case downloadFileCompletionHandler((DefaultDownloadResponse) -> Void)
+    case downloadFileCompletionHandler((AFDownloadResponse<URL?>) -> Void)
 }
 
 /// Protocol defining an API request object.
@@ -117,11 +117,11 @@ class RequestWithTokenRefresh: ApiRequest {
         switch completionHandler {
         case .dataCompletionHandler(let handler):
             if let dataRequest = request as? Alamofire.DataRequest {
-                dataRequest.validate().response(queue: responseQueue, completionHandler: handler)
+                dataRequest.validate().response(queue: responseQueue ?? .main, completionHandler: handler)
             }
         case .downloadFileCompletionHandler(let handler):
             if let downloadRequest = request as? Alamofire.DownloadRequest {
-                downloadRequest.validate().response(queue: responseQueue, completionHandler: handler)
+                downloadRequest.validate().response(queue: responseQueue ?? .main, completionHandler: handler)
             }
         }
     }
@@ -140,15 +140,15 @@ class RequestWithTokenRefresh: ApiRequest {
     private func completeWithError(_ error: OAuth2Error) {
         guard let completionHandler = completionHandler else { return }
         (responseQueue ?? DispatchQueue.main).async {
+            let error = AFError.sessionInvalidated(error: error)
             switch completionHandler  {
             case .dataCompletionHandler(let handler):
-                let dataResponse = DefaultDataResponse(request: nil, response: nil, data: nil, error: error)
+                let dataResponse = AFDataResponse<Data?>(request: nil, response: nil, data: nil, metrics: nil, serializationDuration: 0, result: .failure(error))
                 handler(dataResponse)
             case .downloadFileCompletionHandler(let handler):
-                let downloadResponse = DefaultDownloadResponse(
-                    request: nil, response: nil, temporaryURL: nil,
-                    destinationURL: nil, resumeData: nil, error: error
-                )
+                let downloadResponse = AFDownloadResponse<URL?>(
+                    request: nil, response: nil, fileURL: nil,
+                    resumeData: nil, metrics: nil, serializationDuration: 0, result: .failure(error))
                 handler(downloadResponse)
             }
         }
